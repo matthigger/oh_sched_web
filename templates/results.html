@@ -1,0 +1,16 @@
+<!doctype html>
+<title>Results</title>
+<h1>Outputs</h1>
+<ul>
+  {% for link in download_links %}
+    <li><a href="{{ link }}">{{ link.split('/')[-1] }}</a></li>
+  {% endfor %}
+</ul>
+
+{% if section_dict %}
+  <hr>
+  {% for header, paragraph in section_dict.items() %}
+    <h3>{{ header }}</h3>
+  <pre>{{ paragraph }}</pre>
+  {% endfor %}
+{% endif %}
