@@ -38,13 +38,16 @@ def oh_sched_wrapped(f_csv, f_yaml=None):
 def index():
     if request.method == 'POST':
         csv_file = request.files['csv_file']
-        yaml_file = request.files['yaml_file']
+        yaml_file = request.files.get('yaml_file')
 
         csv_path = UPLOAD_FOLDER / csv_file.filename
-        yaml_path = UPLOAD_FOLDER / yaml_file.filename
-
         csv_file.save(csv_path)
-        yaml_file.save(yaml_path)
+
+        if yaml_file.content_length:
+            yaml_path = UPLOAD_FOLDER / yaml_file.filename
+            yaml_file.save(yaml_path)
+        else:
+            yaml_path = None
 
         # # Run your CLI logic here
         # capture stdout and print to output
