@@ -1,8 +1,57 @@
 <!doctype html>
-<title>Run CLI Tool</title>
-<h1>Upload CSV and YAML files</h1>
-<form method=post enctype=multipart/form-data>
-  <input type=file name=csv_file required>
-  <input type=file name=yaml_file>
-  <input type=submit value=Run>
-</form>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>TA Office Hours Scheduler</title>
+</head>
+<body>
+  <h1> TA Office Hours Scheduler</h1>
+    <p>
+      Assigns TA offers hours to their preferences, which are obtained via <a href="https://docs.google.com/forms/d/1Wm82XnLux83t3pZvLMcAhuiJZKEEsbs4kcqXnotI5bs/template/preview" target="_blank">Google Forms</a>.
+
+    <ul>
+      <li>Adjustable Office Hours Times</li>
+      <li>Multiple TAs per office hours slot</li>
+      <li>"Scaling" preferences (e.g. preferring office hours just before homework deadlines)</li>
+      <li>Exports final schedule to an <code>.ics</code> file (compatible with most calendar apps)</li>
+    </ul>
+
+  Please see <a href="https://github.com/matthigger/oh_sched/blob/main/test/ex_output.txt" target="_blank">this example output</a>
+</p>
+  <p>
+        This is the web interface for a python CLI.  A brief summary is given here, details available on
+        <a href="https://github.com/matthigger/oh_sched" target="_blank">github</a>.
+    </p>
+
+    <h2> Quick Start </h2>
+    <p>
+<ul>
+  <li>
+    TAs fill out office hours preferences via a
+    <a href="https://docs.google.com/forms/d/1Wm82XnLux83t3pZvLMcAhuiJZKEEsbs4kcqXnotI5bs/template/preview" target="_blank">Google Form</a>, upload this CSV and "Generate Schedule" below
+  </li>
+      <li> You can edit the office hours timeslots directly on your own google form (e.g. swap "8AM-9AM" to "10:30AM-10:45AM") <a href="https://github.com/matthigger/oh_sched?tab=readme-ov-file#formatting-office-hours-time" target="_blank">documentation</a>  </li>
+      <li> Configuration parameters are passed via a yaml file.  Please see <a href="https://github.com/matthigger/oh_sched?tab=readme-ov-file#configuration" target="_blank"> configuration documentation  </a>  for details (and a default configuration template)</li>
+    </ul>
+    </p>
+
+  <h2> Data Collection and Storage </h2>
+
+Each run generates a timestamp and a list of TA email hashes (no identifiable data is stored, <a href="/static/usage.csv">check it out yourself</a>).
+
+    <h2>Run Scheduler</h2>
+    <form method="post" enctype="multipart/form-data">
+        <label for="csv_file"> Office Hours Preferences CSV (google form) (required):</label><br>
+        <input type="file" name="csv_file" required><br><br>
+
+        <label for="yaml_file">YAML configuration (optional):</label><br>
+        <input type="file" name="yaml_file"><br><br>
+
+        <input type="submit" value="Generate Schedule">
+    </form>
+
+<h3> Need Help?</h3>
+
+If something is broken or you need help getting started, feel free to reach out :) mhigger@ccs.neu.edu
+</body>
+</html>
