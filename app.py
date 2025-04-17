@@ -1,15 +1,19 @@
 import contextlib
+import hashlib
 import io
 import pathlib
 import shutil
+from datetime import datetime
 
 import oh_sched
 from flask import Flask, request, send_file, render_template
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 
 UPLOAD_FOLDER = pathlib.Path('uploads')
 OUTPUT_FOLDER = pathlib.Path('outputs')
+PATH_USAGE = pathlib.Path('static/usage.csv')
+HASH_LEN = 8
 UPLOAD_FOLDER.mkdir(exist_ok=True)
 OUTPUT_FOLDER.mkdir(exist_ok=True)
 
@@ -30,6 +34,17 @@ def oh_sched_wrapped(f_csv, f_yaml=None):
     # print a copy of config used to outputs
     f_yaml = OUTPUT_FOLDER / 'config.yaml'
     config.to_yaml(f_yaml)
+
+    # add a line to usage
+    with open(PATH_USAGE, 'a') as f:
+        # hash emails
+        email_list = oh_sched.extract_csv(f_csv)[1]
+        list_out = [hashlib.sha256(s.encode()).hexdigest()[:HASH_LEN]
+                    for s in email_list]
+
+        s_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        list_out.insert(0, s_time)
+        print(','.join(list_out), file=f)
 
     return [config.f_out, f_yaml]
 
