@@ -5,50 +5,58 @@
     <title>TA Office Hours Scheduler</title>
 </head>
 <body>
-  <h1> TA Office Hours Scheduler</h1>
-    <p>
-      Assigns TA offers hours to their preferences, which are obtained via <a href="https://docs.google.com/forms/d/1Wm82XnLux83t3pZvLMcAhuiJZKEEsbs4kcqXnotI5bs/template/preview" target="_blank">Google Forms</a>.
+<h1> TA Office Hours Scheduler</h1>
+<p>
+    Assigns TA offers hours to their preferences, which are obtained via <a
+        href="https://docs.google.com/forms/d/1Wm82XnLux83t3pZvLMcAhuiJZKEEsbs4kcqXnotI5bs/template/preview"
+        target="_blank">Google Forms</a>.
 
-    <ul>
-      <li>Adjustable Office Hours Times</li>
-      <li>Multiple TAs per office hours slot</li>
-      <li>"Scaling" preferences (e.g. preferring office hours just before homework deadlines)</li>
-      <li>Exports final schedule to an <code>.ics</code> file (compatible with most calendar apps)</li>
-    </ul>
-
-  Please see <a href="https://github.com/matthigger/oh_sched/blob/main/test/ex_output.txt" target="_blank">this example output</a>
-</p>
-  <p>
-        This is the web interface for a python CLI.  A brief summary is given here, details available on
-        <a href="https://github.com/matthigger/oh_sched" target="_blank">github</a>.
-    </p>
-
-    <h2> Quick Start </h2>
-    <p>
 <ul>
-  <li>
-    TAs fill out office hours preferences via a
-    <a href="https://docs.google.com/forms/d/1Wm82XnLux83t3pZvLMcAhuiJZKEEsbs4kcqXnotI5bs/template/preview" target="_blank">Google Form</a>, upload this CSV and "Generate Schedule" below
-  </li>
-      <li> You can edit the office hours timeslots directly on your own google form (e.g. swap "8AM-9AM" to "10:30AM-10:45AM") <a href="https://github.com/matthigger/oh_sched?tab=readme-ov-file#formatting-office-hours-time" target="_blank">documentation</a>  </li>
-      <li> Configuration parameters are passed via a yaml file.  Please see <a href="https://github.com/matthigger/oh_sched?tab=readme-ov-file#configuration" target="_blank"> configuration documentation  </a>  for details (and a default configuration template)</li>
-    </ul>
-    </p>
+    <li>Adjustable Office Hours Times</li>
+    <li>Multiple TAs per office hours slot</li>
+    <li>"Scaling" preferences (e.g. preferring office hours just before homework deadlines)</li>
+    <li>Exports final schedule to an <code>.ics</code> file (compatible with most calendar apps)</li>
+</ul>
 
-  <h2> Data Collection and Storage </h2>
+</p>
 
-Each run generates a timestamp and a list of TA email hashes (no identifiable data is stored, <a href="/static/usage.csv">check it out yourself</a>).
+<h2> Instructions </h2>
+<p>
+<ul>
+    <li>
+        TAs provide their office hours preferences by filling out a
+        <a href="https://docs.google.com/forms/d/1Wm82XnLux83t3pZvLMcAhuiJZKEEsbs4kcqXnotI5bs/template/preview"
+           target="_blank">Google Form</a> (or download <a href="https://github.com/matthigger/oh_sched/blob/main/test/oh_prefs.csv" target="_blank">our example</a> to test it right now)
+    </li>
+    <li> You can edit the office hours timeslots directly on your own google form (e.g. swap "8AM-9AM" to
+        "10:30AM-10:45AM") <a
+                href="https://github.com/matthigger/oh_sched?tab=readme-ov-file#formatting-office-hours-time"
+                target="_blank">documentation</a></li>
+    <li> Configuration parameters are passed via a yaml file. Please see <a
+            href="https://github.com/matthigger/oh_sched?tab=readme-ov-file#configuration" target="_blank">
+        configuration documentation </a> for details (and a default configuration template)
+    </li>
+</ul>
+</p>
 
-    <h2>Run Scheduler</h2>
-    <form method="post" enctype="multipart/form-data">
-        <label for="csv_file"> Office Hours Preferences CSV (google form) (required):</label><br>
-        <input type="file" name="csv_file" required><br><br>
+<h2> Data Collection and Storage </h2>
 
-        <label for="yaml_file">YAML configuration (optional):</label><br>
-        <input type="file" name="yaml_file"><br><br>
+To collect usage stats, each run generates a timestamp and a list TA email hashes which can't be used to identify the
+original email address. For example:
 
-        <input type="submit" value="Generate Schedule">
-    </form>
+<p class="log-entry">2025-04-22 13:22:05,489 - INFO - RUN 42038f0a,83387ad1,2840a8f3,1383079d, ...</p>
+
+
+<h2>Run Scheduler</h2>
+<form method="post" enctype="multipart/form-data">
+    <label for="csv_file"> Office Hours Preferences CSV (google form) (required):</label><br>
+    <input type="file" name="csv_file" required><br><br>
+
+    <label for="yaml_file">YAML configuration (optional):</label><br>
+    <input type="file" name="yaml_file"><br><br>
+
+    <input type="submit" value="Generate Schedule">
+</form>
 
 <h3> Need Help?</h3>
 

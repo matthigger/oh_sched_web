@@ -1,27 +1,26 @@
 import contextlib
 import hashlib
 import io
+import logging
 import pathlib
 import shutil
-from datetime import datetime
 
 import oh_sched
 from flask import Flask, request, send_from_directory, render_template
 
 app = Flask(__name__, static_folder='static')
 
+logging.basicConfig(level=logging.INFO,
+                    format="%(asctime)s - %(levelname)s - %(message)s")
+
 HASH_LEN = 8
 
 # setup paths
 UPLOAD_FOLDER = pathlib.Path('uploads')
 OUTPUT_FOLDER = pathlib.Path('outputs')
-PATH_USAGE = pathlib.Path('static/usage.csv')
 
 UPLOAD_FOLDER.mkdir(exist_ok=True)
 OUTPUT_FOLDER.mkdir(exist_ok=True)
-PATH_USAGE.parent.mkdir(exist_ok=True)
-if not PATH_USAGE.exists():
-    PATH_USAGE.touch()
 
 
 def oh_sched_wrapped(f_csv, f_yaml=None):
@@ -41,16 +40,11 @@ def oh_sched_wrapped(f_csv, f_yaml=None):
     f_yaml = OUTPUT_FOLDER / 'config.yaml'
     config.to_yaml(f_yaml)
 
-    # add a line to usage
-    with open(PATH_USAGE, 'a') as f:
-        # hash emails
-        email_list = oh_sched.extract_csv(f_csv)[1]
-        list_out = [hashlib.sha256(s.encode()).hexdigest()[:HASH_LEN]
-                    for s in email_list]
-
-        s_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        list_out.insert(0, s_time)
-        print(','.join(list_out), file=f)
+    # add a line to log
+    email_list = oh_sched.extract_csv(f_csv)[1]
+    msg = 'RUN ' + ','.join([hashlib.sha256(s.encode()).hexdigest()[:HASH_LEN]
+                             for s in email_list])
+    app.logger.info(msg)
 
     return [config.f_out, f_yaml]
 
@@ -70,7 +64,6 @@ def index():
         else:
             yaml_path = None
 
-        # # Run your CLI logic here
         # capture stdout and print to output
         stdout_buffer = io.StringIO()
         stderr_buffer = io.StringIO()
@@ -112,5 +105,4 @@ def index():
 
 @app.route('/download/<filename>')
 def download_file(filename):
-    print(OUTPUT_FOLDER)
     return send_from_directory(OUTPUT_FOLDER, filename, as_attachment=True)
