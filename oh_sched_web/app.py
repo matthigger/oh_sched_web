@@ -114,3 +114,7 @@ def download_file(filename):
         return f'File {folder / filename} not found', 404
 
     return send_from_directory(folder, filename, as_attachment=True)
+
+@app.route('/ping')
+def ping():
+    return 'pong'
