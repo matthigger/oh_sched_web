@@ -6,17 +6,23 @@ import shutil
 from datetime import datetime
 
 import oh_sched
-from flask import Flask, request, send_file, render_template
+import oh_sched_web
+from flask import Flask, request, send_from_directory, render_template
 
 app = Flask(__name__, static_folder='static')
 
+HASH_LEN = 8
+
+# setup paths
 UPLOAD_FOLDER = pathlib.Path('uploads')
 OUTPUT_FOLDER = pathlib.Path('outputs')
 PATH_USAGE = pathlib.Path('static/usage.csv')
-HASH_LEN = 8
+
 UPLOAD_FOLDER.mkdir(exist_ok=True)
 OUTPUT_FOLDER.mkdir(exist_ok=True)
-
+PATH_USAGE.parent.mkdir(exist_ok=True)
+if not PATH_USAGE.exists():
+    PATH_USAGE.touch()
 
 def oh_sched_wrapped(f_csv, f_yaml=None):
     if f_yaml is None:
@@ -106,7 +112,8 @@ def index():
 
 @app.route('/download/<filename>')
 def download_file(filename):
-    return send_file(OUTPUT_FOLDER / filename, as_attachment=True)
+    print(OUTPUT_FOLDER)
+    return send_from_directory(OUTPUT_FOLDER, filename, as_attachment=True)
 
 
 if __name__ == '__main__':

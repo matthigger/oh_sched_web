@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "web-teach-tool"
+name = "oh_sched_web"
 version = "0.1.0"
 description = ""
 authors = ["matt higger <matt.higger@gmail.com>"]
@@ -8,6 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 flask = "^3.1.0"
+oh-sched = "^0.2.0"
 
 
 [build-system]
