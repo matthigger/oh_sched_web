@@ -109,4 +109,6 @@ def download_file(filename):
         folder = pathlib.Path(oh_sched.__file__).parents[1] / 'test'
     else:
         folder = OUTPUT_FOLDER
+
+    print(folder, filename)
     return send_from_directory(folder, filename, as_attachment=True)
