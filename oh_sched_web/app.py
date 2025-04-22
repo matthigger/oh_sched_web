@@ -3,9 +3,9 @@ import hashlib
 import io
 import pathlib
 import shutil
-import warnings
 
 import oh_sched
+import oh_sched_web
 from flask import Flask, request, send_from_directory, render_template
 
 app = Flask(__name__)
@@ -13,8 +13,9 @@ app = Flask(__name__)
 HASH_LEN = 8
 
 # setup paths
-UPLOAD_FOLDER = pathlib.Path('uploads')
-OUTPUT_FOLDER = pathlib.Path('outputs')
+FOLDER = pathlib.Path(oh_sched_web.__file__).parents[1]
+UPLOAD_FOLDER = FOLDER / pathlib.Path('uploads')
+OUTPUT_FOLDER = FOLDER / pathlib.Path('outputs')
 
 LOG_PREFIX = 'OH_SCHED RUNNING:'
 
@@ -120,8 +121,3 @@ def download_file(filename):
         return f'File {folder / filename} not found', 404
 
     return send_from_directory(folder, filename, as_attachment=True)
-
-
-@app.route('/ping')
-def ping():
-    return 'pong'
