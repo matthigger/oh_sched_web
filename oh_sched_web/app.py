@@ -1,7 +1,6 @@
 import contextlib
 import hashlib
 import io
-import logging
 import pathlib
 import shutil
 
@@ -10,14 +9,13 @@ from flask import Flask, request, send_from_directory, render_template
 
 app = Flask(__name__, static_folder='static')
 
-logging.basicConfig(level=logging.INFO,
-                    format="%(asctime)s - %(levelname)s - %(message)s")
-
 HASH_LEN = 8
 
 # setup paths
 UPLOAD_FOLDER = pathlib.Path('uploads')
 OUTPUT_FOLDER = pathlib.Path('outputs')
+
+LOG_PREFIX = 'OH_SCHED RUNNING:'
 
 UPLOAD_FOLDER.mkdir(exist_ok=True)
 OUTPUT_FOLDER.mkdir(exist_ok=True)
@@ -42,9 +40,9 @@ def oh_sched_wrapped(f_csv, f_yaml=None):
 
     # add a line to log
     email_list = oh_sched.extract_csv(f_csv)[1]
-    msg = 'RUN ' + ','.join([hashlib.sha256(s.encode()).hexdigest()[:HASH_LEN]
-                             for s in email_list])
-    app.logger.info(msg)
+    s = ','.join([hashlib.sha256(s.encode()).hexdigest()[:HASH_LEN]
+                  for s in email_list])
+    app.logger.info(LOG_PREFIX + s)
 
     return [config.f_out, f_yaml]
 
@@ -58,11 +56,8 @@ def index():
         csv_path = UPLOAD_FOLDER / csv_file.filename
         csv_file.save(csv_path)
 
-        if yaml_file.content_length:
-            yaml_path = UPLOAD_FOLDER / yaml_file.filename
-            yaml_file.save(yaml_path)
-        else:
-            yaml_path = None
+        # hard code no yaml (we'll need to build config object here soon)
+        yaml_path = None
 
         # capture stdout and print to output
         stdout_buffer = io.StringIO()
