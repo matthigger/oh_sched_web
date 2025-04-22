@@ -3,11 +3,12 @@ import hashlib
 import io
 import pathlib
 import shutil
+import warnings
 
 import oh_sched
 from flask import Flask, request, send_from_directory, render_template
 
-app = Flask(__name__, static_folder='static')
+app = Flask(__name__)
 
 HASH_LEN = 8
 
@@ -72,6 +73,11 @@ def index():
               contextlib.redirect_stderr(stderr_buffer)):
             output_paths = oh_sched_wrapped(csv_path, config)
 
+            folder = pathlib.Path('.')
+            for file_path in folder.rglob('*'):
+                if file_path.is_file():
+                    print(file_path.relative_to(folder))
+
         section_dict = dict()
         for buffer, file in [(stderr_buffer, 'error.txt'),
                              (stdout_buffer, 'output.txt')]:
@@ -114,6 +120,7 @@ def download_file(filename):
         return f'File {folder / filename} not found', 404
 
     return send_from_directory(folder, filename, as_attachment=True)
+
 
 @app.route('/ping')
 def ping():
