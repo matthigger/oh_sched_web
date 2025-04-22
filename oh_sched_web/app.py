@@ -120,7 +120,8 @@ if __name__ == '__main__':
     import os
 
     # Get port from environment variable (default to 5000 for local dev)
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get('PORT', 5000))
+    print(os.environ)
 
     # Bind to 0.0.0.0 to accept external requests
-    app.run(host="0.0.0.0", port=port)
+    app.run(host='0.0.0.0', port=port)
