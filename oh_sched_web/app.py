@@ -21,14 +21,7 @@ UPLOAD_FOLDER.mkdir(exist_ok=True)
 OUTPUT_FOLDER.mkdir(exist_ok=True)
 
 
-def oh_sched_wrapped(f_csv, f_yaml=None):
-    if f_yaml is None:
-        # default config if no yaml passed
-        print('no config yaml passed, using default config file')
-        config = oh_sched.Config()
-    else:
-        config = oh_sched.Config.from_yaml(f_yaml)
-
+def oh_sched_wrapped(f_csv, config):
     # config, output is always output_folder / 'office_hours.ics'
     config.f_out = OUTPUT_FOLDER / 'office_hours.ics'
 
@@ -51,13 +44,25 @@ def oh_sched_wrapped(f_csv, f_yaml=None):
 def index():
     if request.method == 'POST':
         csv_file = request.files['csv_file']
-        yaml_file = request.files.get('yaml_file')
+
+        # load config
+        config_params = ['oh_per_ta', 'max_ta_per_oh', 'date_start',
+                         'date_end', 'scale_dict']
+        config = {s: request.form.get(s) for s in config_params}
+        config = {k: None if v == '' else v
+                  for k, v in config.items()}
+
+        if config['scale_dict'] is not None:
+            s_scale = config['scale_dict']
+            config['scale_dict'] = dict()
+            for line in s_scale.split(','):
+                s_regex, scale = line.split(':')
+                config['scale_dict'][s_regex] = float(scale)
+
+        config = oh_sched.Config(**config)
 
         csv_path = UPLOAD_FOLDER / csv_file.filename
         csv_file.save(csv_path)
-
-        # hard code no yaml (we'll need to build config object here soon)
-        yaml_path = None
 
         # capture stdout and print to output
         stdout_buffer = io.StringIO()
@@ -65,7 +70,7 @@ def index():
 
         with (contextlib.redirect_stdout(stdout_buffer),
               contextlib.redirect_stderr(stderr_buffer)):
-            output_paths = oh_sched_wrapped(csv_path, yaml_path)
+            output_paths = oh_sched_wrapped(csv_path, config)
 
         section_dict = dict()
         for buffer, file in [(stderr_buffer, 'error.txt'),
@@ -100,4 +105,8 @@ def index():
 
 @app.route('/download/<filename>')
 def download_file(filename):
-    return send_from_directory(OUTPUT_FOLDER, filename, as_attachment=True)
+    if filename == 'oh_prefs.csv':
+        folder = pathlib.Path(oh_sched.__file__).parents[1] / 'test'
+    else:
+        folder = OUTPUT_FOLDER
+    return send_from_directory(folder, filename, as_attachment=True)
