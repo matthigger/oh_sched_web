@@ -6,7 +6,6 @@ import shutil
 from datetime import datetime
 
 import oh_sched
-import oh_sched_web
 from flask import Flask, request, send_from_directory, render_template
 
 app = Flask(__name__, static_folder='static')
@@ -23,6 +22,7 @@ OUTPUT_FOLDER.mkdir(exist_ok=True)
 PATH_USAGE.parent.mkdir(exist_ok=True)
 if not PATH_USAGE.exists():
     PATH_USAGE.touch()
+
 
 def oh_sched_wrapped(f_csv, f_yaml=None):
     if f_yaml is None:
@@ -117,6 +117,10 @@ def download_file(filename):
 
 
 if __name__ == '__main__':
-    # local debug
-    # app.run(debug=True)
-    app.run(host='0.0.0.0')
+    import os
+
+    # Get port from environment variable (default to 5000 for local dev)
+    port = int(os.environ.get("PORT", 5000))
+
+    # Bind to 0.0.0.0 to accept external requests
+    app.run(host="0.0.0.0", port=port)
