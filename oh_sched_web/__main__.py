@@ -1,4 +1,4 @@
-from oh_sched_web.app import app
-
 if __name__ == '__main__':
-	app.run()
+    import oh_sched_web
+
+    oh_sched_web.app.app.run(debug=True)
