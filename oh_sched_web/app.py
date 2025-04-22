@@ -12,6 +12,9 @@ import oh_sched_web
 
 app = Flask(__name__)
 
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+
 HASH_LEN = 8
 
 # setup paths
