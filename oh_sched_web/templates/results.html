@@ -1,16 +1,88 @@
 <!doctype html>
-<title>Results</title>
-<h1>Outputs</h1>
-<ul>
-  {% for link in download_links %}
-    <li><a href="{{ link }}">{{ link.split('/')[-1] }}</a></li>
-  {% endfor %}
-</ul>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
 
-{% if section_dict %}
-  <hr>
-  {% for header, paragraph in section_dict.items() %}
-    <h3>{{ header }}</h3>
-  <pre>{{ paragraph }}</pre>
-  {% endfor %}
-{% endif %}
+        .container {
+            width: 80%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1, h3 {
+            text-align: center;
+        }
+
+        ul {
+            line-height: 1.6;
+            font-size: 16px;
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        li {
+            margin: 10px 0;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        pre {
+            font-family: monospace;
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-bottom: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #888;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Outputs</h1>
+
+    <ul>
+        {% for link in download_links %}
+            <li><a href="{{ link }}">{{ link.split('/')[-1] }}</a></li>
+        {% endfor %}
+    </ul>
+
+    {% if section_dict %}
+        <hr>
+        {% for header, paragraph in section_dict.items() %}
+            <h3>{{ header }}</h3>
+            <pre>{{ paragraph }}</pre>
+        {% endfor %}
+    {% endif %}
+</div>
+
+</body>
+</html>

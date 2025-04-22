@@ -3,63 +3,175 @@
 <head>
     <meta charset="utf-8">
     <title>TA Office Hours Scheduler</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+        }
+
+        p, ul {
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        ul {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="file"],
+        input[type="number"],
+        input[type="date"],
+        textarea {
+            padding: 8px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .log-entry {
+            font-family: monospace;
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            word-wrap: break-word;
+        }
+
+        .help-text {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #888;
+            margin-top: 40px;
+        }
+    </style>
 </head>
 <body>
-<h1> TA Office Hours Scheduler</h1>
-<p>
-    Assigns TA offers hours to their preferences, which are obtained via <a
-        href="https://docs.google.com/forms/d/1Wm82XnLux83t3pZvLMcAhuiJZKEEsbs4kcqXnotI5bs/template/preview"
-        target="_blank">Google Forms</a>.
 
-<ul>
-    <li>Adjustable Office Hours Times</li>
-    <li>Multiple TAs per office hours slot</li>
-    <li>"Scaling" preferences (e.g. preferring office hours just before homework deadlines)</li>
-    <li>Exports final schedule to an <code>.ics</code> file (compatible with most calendar apps)</li>
-</ul>
+<div class="container">
+    <h1>TA Office Hours Scheduler</h1>
+    <p>
+        Builds a TA Office Hours schedule which synthesizes TA and instructor preferences.
+    </p>
 
-</p>
+    <ul>
+        <li>Support for multiple TAs per office hours slot</li>
+        <li>Allows instructor to "tweak" preferences (e.g., encouraging more office hours just before homework deadlines)</li>
+        <li>Exports final schedule to an <code>.ics</code> file (compatible with most calendar apps)</li>
+    </ul>
 
-<h2> Instructions </h2>
-<p>
-<ul>
-    <li>
+    <p>
         TAs provide their office hours preferences by filling out a
         <a href="https://docs.google.com/forms/d/1Wm82XnLux83t3pZvLMcAhuiJZKEEsbs4kcqXnotI5bs/template/preview"
-           target="_blank">Google Form</a> (or download <a href="https://github.com/matthigger/oh_sched/blob/main/test/oh_prefs.csv" target="_blank">our example</a> to test it right now)
-    </li>
-    <li> You can edit the office hours timeslots directly on your own google form (e.g. swap "8AM-9AM" to
-        "10:30AM-10:45AM") <a
+           target="_blank">Google Form</a>.
+    </p>
+
+    <p class="help-text">
+        The link immediately above is only a template, please do edit the instructions and timeslots as needed (e.g., swap "8AM-9AM" to
+        "10:30AM-10:45AM" <a
                 href="https://github.com/matthigger/oh_sched?tab=readme-ov-file#formatting-office-hours-time"
-                target="_blank">documentation</a></li>
-    <li> Configuration parameters are passed via a yaml file. Please see <a
-            href="https://github.com/matthigger/oh_sched?tab=readme-ov-file#configuration" target="_blank">
-        configuration documentation </a> for details (and a default configuration template)
-    </li>
-</ul>
-</p>
+                target="_blank">see also</a>).
+    </p>
 
-<h2> Data Collection and Storage </h2>
+    <h2>Data Collection and Storage</h2>
 
-To collect usage stats, each run generates a timestamp and a list TA email hashes which can't be used to identify the
-original email address. For example:
+    <p>
+        To get a sense of usage, each run generates a timestamp and a list of TA email hashes (they can't be used to identify the
+        original email addresses). For example:
+    </p>
 
-<p class="log-entry">2025-04-22 13:22:05,489 - INFO - RUN 42038f0a,83387ad1,2840a8f3,1383079d, ...</p>
+    <p class="log-entry">2025-04-22 13:22:05,489 - INFO - RUN 42038f0a,83387ad1,2840a8f3,1383079d, ...</p>
+
+        <h2>Need Help?</h2>
+
+    <p>If something is broken or you need help getting started, please don't hesitate to reach out :) mhigger@ccs.neu.edu</p>
 
 
-<h2>Run Scheduler</h2>
-<form method="post" enctype="multipart/form-data">
-    <label for="csv_file"> Office Hours Preferences CSV (google form) (required):</label><br>
-    <input type="file" name="csv_file" required><br><br>
+    <h2>Build Schedule</h2>
+    <form method="post" enctype="multipart/form-data">
+        <label for="csv_file">Office Hours Preferences CSV (Google Form) (required):</label>
+        <input type="file" name="csv_file" required><br>
 
-    <label for="yaml_file">YAML configuration (optional):</label><br>
-    <input type="file" name="yaml_file"><br><br>
+        <!-- Parameter for office hours assigned per TA -->
+        <label for="oh_per_ta">Office Hour slots per TA (default: 1):</label>
+        <input type="number" name="oh_per_ta" value="1" min="1" step="1"><br>
 
-    <input type="submit" value="Generate Schedule">
-</form>
+        <!-- Parameter for maximum number of TAs per office hours slot -->
+        <label for="max_ta_per_oh">Maximum TAs per Office Hours Slot (default: none):</label>
+        <input type="number" name="max_ta_per_oh" value="0" min="0" step="1"><br>
 
-<h3> Need Help?</h3>
+        <!-- Parameter for the starting date -->
+        <label for="date_start">Starting Date (default: today):</label>
+        <input type="date" name="date_start" value=""><br>
 
-If something is broken or you need help getting started, feel free to reach out :) mhigger@ccs.neu.edu
+        <!-- Parameter for the ending date -->
+        <label for="date_end">Ending Date (default: a week from today):</label>
+        <input type="date" name="date_end" value=""><br>
+
+        <!-- Parameter for scale_dict -->
+        <label for="scale_dict">Scaling Preferences (optional):</label><br>
+        <textarea name="scale_dict" rows="4" cols="50" placeholder="For example: {'Thu': 1.1, 'Fri': 1.2}"></textarea><br>
+
+        <input type="submit" value="Generate Schedule">
+    </form>
+
+</div>
+
 </body>
 </html>
