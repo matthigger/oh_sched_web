@@ -110,5 +110,7 @@ def download_file(filename):
     else:
         folder = OUTPUT_FOLDER
 
-    print(folder, filename)
+    if not (folder / filename).exists():
+        return f'File {folder / filename} not found', 404
+
     return send_from_directory(folder, filename, as_attachment=True)
