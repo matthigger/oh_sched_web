@@ -1,12 +1,14 @@
 import contextlib
 import hashlib
 import io
+import logging
 import pathlib
 import shutil
 
 import oh_sched
-import oh_sched_web
 from flask import Flask, request, send_from_directory, render_template
+
+import oh_sched_web
 
 app = Flask(__name__)
 
@@ -73,11 +75,6 @@ def index():
         with (contextlib.redirect_stdout(stdout_buffer),
               contextlib.redirect_stderr(stderr_buffer)):
             output_paths = oh_sched_wrapped(csv_path, config)
-
-            folder = pathlib.Path('.')
-            for file_path in folder.rglob('*'):
-                if file_path.is_file():
-                    print(file_path.relative_to(folder))
 
         section_dict = dict()
         for buffer, file in [(stderr_buffer, 'error.txt'),
