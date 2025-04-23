@@ -4,6 +4,7 @@ import io
 import logging
 import pathlib
 import shutil
+from datetime import datetime
 
 import oh_sched
 import yaml
@@ -22,6 +23,7 @@ HASH_LEN = 8
 FOLDER = pathlib.Path(oh_sched_web.__file__).parents[1]
 UPLOAD_FOLDER = FOLDER / pathlib.Path('uploads')
 OUTPUT_FOLDER = FOLDER / pathlib.Path('outputs')
+f_usage = FOLDER / 'usage.csv'
 
 LOG_PREFIX = 'OH_SCHED RUNNING:'
 
@@ -39,11 +41,15 @@ def oh_sched_wrapped(f_csv, config):
     f_yaml = OUTPUT_FOLDER / 'config.yaml'
     config.to_yaml(f_yaml)
 
-    # add a line to log
+    # add a line to log and f_usage
+    now = datetime.now()
+    s_now = now.strftime('%Y-%m-%d %H:%M:%S.%f,')
     email_list = oh_sched.extract_csv(f_csv)[1]
     s = ','.join([hashlib.sha256(s.encode()).hexdigest()[:HASH_LEN]
                   for s in email_list])
     app.logger.info(LOG_PREFIX + s)
+    with open(f_usage, 'a') as f:
+        print(s_now + s, file=f)
 
     return [config.f_out, f_yaml]
 
@@ -115,6 +121,8 @@ def index():
 def download_file(filename):
     if filename == 'oh_prefs_toy.csv':
         folder = pathlib.Path(oh_sched_web.__file__).parents[1]
+    elif filename == 'usage.csv':
+        folder = FOLDER
     else:
         folder = OUTPUT_FOLDER
 
