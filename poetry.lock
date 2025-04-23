@@ -343,13 +343,13 @@ files = [
 
 [[package]]
 name = "oh-sched"
-version = "0.2.0"
+version = "0.3.0"
 description = ""
 optional = false
 python-versions = "<4.0,>=3.10"
 files = [
-    {file = "oh_sched-0.2.0-py3-none-any.whl", hash = "sha256:b138e3cbe40a0efc2b6d2d1e6c3eb3c5d2293152e86b9f8643d293361d67e2e3"},
-    {file = "oh_sched-0.2.0.tar.gz", hash = "sha256:b2f1e393109d5eec799d774b73d797afae7c388da9bd5ece1e4cd13aa7eb78d6"},
+    {file = "oh_sched-0.3.0-py3-none-any.whl", hash = "sha256:2e9d6044fa1acee6cbe4b637997f7d0960d53e7892ed19d7e1bf3043093dcdd1"},
+    {file = "oh_sched-0.3.0.tar.gz", hash = "sha256:7af6f8ee315dd9a73525918219935be71b229fb6ae53364e2f6dbcdfb7b7f707"},
 ]
 
 [package.dependencies]
@@ -761,4 +761,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "9510c28df9ce0b464e4da1dc68afcdd179ac9b21f282a7c727facf54fffadb52"
+content-hash = "65fba6cacc92a645d179ea8a1804e16b25fff65869120f836d26d4f81e47d86c"

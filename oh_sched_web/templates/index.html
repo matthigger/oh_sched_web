@@ -100,6 +100,17 @@
             color: #888;
             margin-top: 40px;
         }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .form-row label {
+            margin-right: 0.25rem;
+        }
     </style>
 </head>
 <body>
@@ -112,7 +123,9 @@
 
     <ul>
         <li>Support for multiple TAs per office hours slot</li>
-        <li>Allows instructor to "tweak" preferences (e.g., encouraging more office hours just before homework deadlines)</li>
+        <li>Allows instructor to "tweak" preferences (e.g., encouraging more office hours just before homework
+            deadlines)
+        </li>
         <li>Exports final schedule to an <code>.ics</code> file (compatible with most calendar apps)</li>
     </ul>
 
@@ -123,31 +136,36 @@
     </p>
 
     <p class="help-text">
-        The link immediately above is only a template, please do edit the instructions and timeslots as needed (e.g., swap "8AM-9AM" to
+        The link immediately above is only a template, please do edit the instructions and timeslots as needed (e.g.,
+        swap "8AM-9AM" to
         "10:30AM-10:45AM" <a
-                href="https://github.com/matthigger/oh_sched?tab=readme-ov-file#formatting-office-hours-time"
-                target="_blank">see also</a>).
+            href="https://github.com/matthigger/oh_sched?tab=readme-ov-file#formatting-office-hours-time"
+            target="_blank">see also</a>).
     </p>
 
     <h2>Data Collection and Storage</h2>
 
     <p>
-        To get a sense of usage, each run generates a timestamp and a list of TA email hashes (they can't be used to identify the
+        To get a sense of usage, each run generates a timestamp and a list of TA email hashes (they can't be used to
+        identify the
         original email addresses). For example:
     </p>
 
     <p class="log-entry">2025-04-22 13:22:05,489 - INFO - RUN 42038f0a,83387ad1,2840a8f3,1383079d, ...</p>
 
-        <h2>Need Help?</h2>
+    <h2>Need Help?</h2>
 
-    <p>If something is broken or you need help getting started, please don't hesitate to reach out :) mhigger@ccs.neu.edu</p>
+    <p>If something is broken or you need help getting started, please don't hesitate to reach out :)
+        mhigger@ccs.neu.edu</p>
 
 
     <h2>Build Schedule</h2>
     <form method="post" enctype="multipart/form-data">
+
         <label for="csv_file">Office Hours Preferences CSV from Google Form:</label>
-                <p class="help-text" style="margin-top: 0; padding-top: 0;">
-             (Test it out with our toy example:<a href="{{ url_for('download_file', filename='oh_prefs_toy.csv') }}" download> oh_prefs_toy.csv</a>)
+        <p class="help-text" style="margin-top: 0; padding-top: 0;">
+            (Test it out with our toy example:<a href="{{ url_for('download_file', filename='oh_prefs_toy.csv') }}"
+                                                 download> oh_prefs_toy.csv</a>)
         </p>
         <input type="file" name="csv_file" required><br>
 
@@ -159,21 +177,33 @@
         <label for="max_ta_per_oh">Maximum TAs per Office Hours Slot (empty = no maximum):</label>
         <input type="number" name="max_ta_per_oh" value="" min="0" step="1"><br>
 
-        <!-- Parameter for the starting date -->
-        <label for="date_start">ICS Starting Date (default: today):</label>
-        <input type="date" name="date_start" value=""><br>
-
-        <!-- Parameter for the ending date -->
-        <label for="date_end">ICS Ending Date (default: a week from start):</label>
-        <input type="date" name="date_end" value=""><br>
-
         <!-- Parameter for scale_dict -->
         <label for="scale_dict">Scaling Preferences (optional):</label><br>
 
         <p class="help-text" style="margin-top: 0; padding-top: 0;">
-            Scale TA preferences to course needs.  Writing "Mon: .9, Fri: 1.2" below would scale everyone's Monday preferences by .9 (discouraging selection) and increase Fridays by a factor of 1.2 (encouraging selection).  We suggest keeping scaling factors close to 1 to respect TA preferences.  In effect you're just breaking ties to prefer some days or times of the week.  Validate your scaling works as intended by checking the output screen, it will print a line for every timeslot modification.
+            Scale TA preferences to course needs. Writing "Mon: .9, Fri: 1.2" below would scale everyone's Monday
+            preferences by .9 (discouraging selection) and increase Fridays by a factor of 1.2 (encouraging selection).
+            We suggest keeping scaling factors close to 1 to respect TA preferences. In effect you're just breaking ties
+            to prefer some days or times of the week. Validate your scaling works as intended by checking the output
+            screen, it will print a line for every timeslot modification.
         </p>
-        <textarea name="scale_dict" rows="4" cols="50"></textarea><br>
+        <textarea name="scale_dict" rows="1" cols="50"></textarea><br>
+
+
+                <label>Output ICS Calendar:</label>
+        <div class="form-row">
+            <!-- Parameter for the starting date -->
+            <label for="date_start">Start:</label>
+            <input type="date" name="date_start" value="">
+
+            <!-- Parameter for the ending date -->
+            <label for="date_end">End:</label>
+            <input type="date" name="date_end" value="">
+
+            <!-- Parameter for timezone -->
+            <label for="tz">Timezone:</label>
+            <input type="text" name="tz" value="US/Eastern">
+        </div>
 
         <input type="submit" value="Generate Schedule">
     </form>
