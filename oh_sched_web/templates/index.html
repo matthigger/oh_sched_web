@@ -145,7 +145,10 @@
 
     <h2>Build Schedule</h2>
     <form method="post" enctype="multipart/form-data">
-        <label for="csv_file">Office Hours Preferences CSV (Google Form) <a href="{{ url_for('download_file', filename='oh_prefs.csv') }}" download>download our example csv</a>:</label>
+        <label for="csv_file">Office Hours Preferences CSV from Google Form:</label>
+                <p class="help-text" style="margin-top: 0; padding-top: 0;">
+             (Test it out with our toy example:<a href="{{ url_for('download_file', filename='oh_prefs_toy.csv') }}" download> oh_prefs_toy.csv</a>)
+        </p>
         <input type="file" name="csv_file" required><br>
 
         <!-- Parameter for office hours assigned per TA -->
@@ -168,7 +171,7 @@
         <label for="scale_dict">Scaling Preferences (optional):</label><br>
 
         <p class="help-text" style="margin-top: 0; padding-top: 0;">
-            Scale TA preferences to course needs.  Writing "Mon: .9, Fri: 1.2" below would scale everyone's Monday preferences by .9 (discouraging selection) and increase Fridays by a factor of 1.2 (encouraging selection).  We suggest keeping scaling factors close to 1 to respect TA preferences.  In effect you're just breaking ties to prefer some days or times of the week.
+            Scale TA preferences to course needs.  Writing "Mon: .9, Fri: 1.2" below would scale everyone's Monday preferences by .9 (discouraging selection) and increase Fridays by a factor of 1.2 (encouraging selection).  We suggest keeping scaling factors close to 1 to respect TA preferences.  In effect you're just breaking ties to prefer some days or times of the week.  Validate your scaling works as intended by checking the output screen, it will print a line for every timeslot modification.
         </p>
         <textarea name="scale_dict" rows="4" cols="50"></textarea><br>
 

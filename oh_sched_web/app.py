@@ -112,8 +112,8 @@ def index():
 
 @app.route('/download/<filename>')
 def download_file(filename):
-    if filename == 'oh_prefs.csv':
-        folder = pathlib.Path(oh_sched.__file__).parents[1] / 'test'
+    if filename == 'oh_prefs_toy.csv':
+        folder = pathlib.Path(oh_sched_web.__file__).parents[1]
     else:
         folder = OUTPUT_FOLDER
 
