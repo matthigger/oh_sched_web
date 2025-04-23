@@ -6,6 +6,7 @@ import pathlib
 import shutil
 
 import oh_sched
+import yaml
 from flask import Flask, request, send_from_directory, render_template
 
 import oh_sched_web
@@ -54,7 +55,7 @@ def index():
 
         # load config
         config_params = ['oh_per_ta', 'max_ta_per_oh', 'date_start',
-                         'date_end', 'scale_dict', 'tz']
+                         'date_end', 'scale_dict']
         config = {s: request.form.get(s) for s in config_params}
         config = {k: None if v == '' else v
                   for k, v in config.items()}
@@ -79,7 +80,7 @@ def index():
               contextlib.redirect_stderr(stderr_buffer)):
             output_paths = oh_sched_wrapped(csv_path, config)
 
-        section_dict = dict()
+        section_dict = {'config.yaml': yaml.dump(config.to_dict())}
         for buffer, file in [(stderr_buffer, 'error.txt'),
                              (stdout_buffer, 'output.txt')]:
             s = buffer.getvalue()
