@@ -61,7 +61,7 @@ def index():
 
         # load config
         config_params = ['oh_per_ta', 'max_ta_per_oh', 'date_start',
-                         'date_end', 'scale_dict']
+                         'date_end', 'scale_dict', 'tz']
         config = {s: request.form.get(s) for s in config_params}
         config = {k: None if v == '' else v
                   for k, v in config.items()}
