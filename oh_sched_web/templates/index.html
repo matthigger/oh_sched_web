@@ -198,8 +198,28 @@
             <input type="date" name="date_end" value="">
 
             <!-- Parameter for timezone -->
-            <label for="tz">Timezone:</label>
-            <input type="text" name="tz" value="US/Eastern">
+<label for="tz">Timezone:</label>
+<select name="tz" id="tz">
+    <option value="">Select Timezone</option> <!-- Placeholder Option -->
+</select>
+
+<script>
+    // Fetch the timezones data from the JSON file and populate the select dropdown
+    fetch('timezones.json')
+        .then(response => response.json())
+        .then(timezones => {
+            const selectElement = document.getElementById('tz');
+            timezones.forEach(tz => {
+                const option = document.createElement('option');
+                option.value = tz;
+                option.textContent = tz;
+                selectElement.appendChild(option);
+            });
+            // Set default value to America/New_York after populating the dropdown
+            selectElement.value = "America/New_York";
+        })
+        .catch(error => console.error('Error loading timezones:', error));
+</script>
         </div>
 
         <input type="submit" value="Generate Schedule">
