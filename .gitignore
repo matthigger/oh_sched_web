@@ -5,3 +5,5 @@
 /oh_sched_web/__pycache__/
 /todo.txt
 /usage.csv
+/.env
+tmp*

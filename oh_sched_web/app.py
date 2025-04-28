@@ -4,15 +4,24 @@ import io
 import logging
 import pathlib
 import shutil
+import os
+import uuid
 from datetime import datetime
 
+import boto3
 import oh_sched
 import yaml
 from flask import Flask, request, send_from_directory, render_template
+from dotenv import load_dotenv
+
 
 import oh_sched_web
 
 app = Flask(__name__)
+
+# loads aws credentials (if .env found locally, else these params given to
+# render explicitly)
+load_dotenv()
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
@@ -41,15 +50,19 @@ def oh_sched_wrapped(f_csv, config):
     f_yaml = OUTPUT_FOLDER / 'config.yaml'
     config.to_yaml(f_yaml)
 
-    # add a line to log and f_usage
+    # send usage line to aws
     now = datetime.now()
-    s_now = now.strftime('%Y-%m-%d %H:%M:%S.%f,')
-    email_list = oh_sched.extract_csv(f_csv)[1]
-    s = ','.join([hashlib.sha256(s.encode()).hexdigest()[:HASH_LEN]
-                  for s in email_list])
+    s_now = now.strftime('%Y-%m-%d %H:%M:%S.%f')
+    email_list = [hashlib.sha256(s.encode()).hexdigest()[:HASH_LEN]
+                  for s in oh_sched.extract_csv(f_csv)[1]]
+    s = ','.join([s_now] + email_list)
     app.logger.info(LOG_PREFIX + s)
-    with open(f_usage, 'a') as f:
-        print(s_now + s, file=f)
+
+    # upload
+    s3 = boto3.client('s3')
+    s3.put_object(Bucket=os.environ.get('AWS_BUCKET'),
+                  Key=str(uuid.uuid4())[:5],
+                  Body=s)
 
     return [config.f_out, f_yaml]
 
