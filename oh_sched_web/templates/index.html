@@ -122,34 +122,25 @@
     </p>
 
     <ul>
-        <li>Support for multiple TAs per office hours slot</li>
-        <li>Allows instructor to "tweak" preferences (e.g., encouraging more office hours just before homework
-            deadlines)
+        <li>TAs share their preferred office hours by filling out an <a
+                href="https://docs.google.com/forms/d/1Wm82XnLux83t3pZvLMcAhuiJZKEEsbs4kcqXnotI5bs/template/preview"
+                target="_blank">online survey </a>. Please edit this template to your own needs (e.g., swap "8AM-9AM" to
+            "10:30AM-10:45AM").
         </li>
-        <li>Exports final schedule to an <code>.ics</code> file (compatible with most calendar apps)</li>
+        <li>The instructor provides their own scheduling preferences (see below).</li>
+        <li>A final schedule is exported to an <code>.ics</code> file, ready to upload into most calendar apps (e.g.
+            Google Calendar)
+        </li>
     </ul>
 
     <p>
-        TAs provide their office hours preferences by filling out a
-        <a href="https://docs.google.com/forms/d/1Wm82XnLux83t3pZvLMcAhuiJZKEEsbs4kcqXnotI5bs/template/preview"
-           target="_blank">Google Form</a>.
+        Try it out yourself below with this <a href="{{ url_for('download_file', filename='oh_prefs_toy.csv') }}" download> example preference CSV</a>.
     </p>
-
-    <p class="help-text">
-        The link immediately above is only a template, please do edit the instructions and timeslots as needed (e.g.,
-        swap "8AM-9AM" to
-        "10:30AM-10:45AM" <a
-            href="https://github.com/matthigger/oh_sched?tab=readme-ov-file#formatting-office-hours-time"
-            target="_blank">see also</a>).
-    </p>
-
-    <h2>Data Collection and Storage</h2>
 
     <p>
-        To get a sense of usage, each run generates a timestamp and a list of TA email hashes (they can't be used to
+        To track how many people use this tool, each run generates a timestamp and a list of TA email hashes (they can't be used to
         identify the original email addresses).
     </p>
-    <h2>Need Help?</h2>
 
     <p>If something is broken or you need help getting started, please don't hesitate to reach out :)
         mhigger@ccs.neu.edu</p>
@@ -158,35 +149,31 @@
     <h2>Build Schedule</h2>
     <form method="post" enctype="multipart/form-data">
 
-        <label for="csv_file">Office Hours Preferences CSV from Google Form:</label>
-        <p class="help-text" style="margin-top: 0; padding-top: 0;">
-            (Test it out with our toy example:<a href="{{ url_for('download_file', filename='oh_prefs_toy.csv') }}"
-                                                 download> oh_prefs_toy.csv</a>)
-        </p>
+        <label for="csv_file">Preference CSV (from survey):</label>
         <input type="file" name="csv_file" required><br>
 
         <!-- Parameter for office hours assigned per TA -->
-        <label for="oh_per_ta">Office Hour slots per TA:</label>
+        <label for="oh_per_ta">How many Office Hour slots should each TA be assigned?</label>
         <input type="number" name="oh_per_ta" value="1" min="1" step="1"><br>
 
         <!-- Parameter for maximum number of TAs per office hours slot -->
-        <label for="max_ta_per_oh">Maximum TAs per Office Hours Slot (empty = no maximum):</label>
+        <label for="max_ta_per_oh">At most, how many TAs are assigned the same Office Hour slot? (empty = no
+            maximum):</label>
         <input type="number" name="max_ta_per_oh" value="" min="0" step="1"><br>
 
         <!-- Parameter for scale_dict -->
         <label for="scale_dict">Scaling Preferences (optional):</label><br>
 
         <p class="help-text" style="margin-top: 0; padding-top: 0;">
-            Scale TA preferences to course needs. Writing "Mon: .9, Fri: 1.2" below would scale everyone's Monday
-            preferences by .9 (discouraging selection) and increase Fridays by a factor of 1.2 (encouraging selection).
-            We suggest keeping scaling factors close to 1 to respect TA preferences. In effect you're just breaking ties
-            to prefer some days or times of the week. Validate your scaling works as intended by checking the output
-            screen, it will print a line for every timeslot modification.
+            This parameter allows you to adjust TA preferences to suit course needs.  For example, "Fri:1.1"
+            scales preferences on Fridays by a factor of 1.1, encouraging their selection (maybe you want to ensure enough TA support for time slots which you expect to be busy).
+            Multiple scaling factors can be added, just seperate by a comma (e.g. "Fri:1.2,3PM:.9" would also discourage OH which include "3PM").
+            By keeping your scaling factors close to 1 your adjustment will, in effect, only breaks ties such that you can respect the TA preferences as originally given.  Be sure to check that your scale applies as intended by checking the "Scaling office hours preferences:" section of the output.
         </p>
         <textarea name="scale_dict" rows="1" cols="50"></textarea><br>
 
 
-                <label>Output ICS Calendar:</label>
+        <label>Output ICS Calendar:</label>
         <div class="form-row">
             <!-- Parameter for the starting date -->
             <label for="date_start">Start:</label>
@@ -197,28 +184,28 @@
             <input type="date" name="date_end" value="">
 
             <!-- Parameter for timezone -->
-<label for="tz">Timezone:</label>
-<select name="tz" id="tz">
-    <option value="">Select Timezone</option> <!-- Placeholder Option -->
-</select>
+            <label for="tz">Timezone:</label>
+            <select name="tz" id="tz">
+                <option value="">Select Timezone</option> <!-- Placeholder Option -->
+            </select>
 
-<script>
-    // Fetch the timezones data from the JSON file and populate the select dropdown
-    fetch('/static/timezones.json')
-        .then(response => response.json())
-        .then(timezones => {
-            const selectElement = document.getElementById('tz');
-            timezones.forEach(tz => {
-                const option = document.createElement('option');
-                option.value = tz;
-                option.textContent = tz;
-                selectElement.appendChild(option);
-            });
-            // Set default value to America/New_York after populating the dropdown
-            selectElement.value = "America/New_York";
-        })
-        .catch(error => console.error('Error loading timezones:', error));
-</script>
+            <script>
+                // Fetch the timezones data from the JSON file and populate the select dropdown
+                fetch('/static/timezones.json')
+                    .then(response => response.json())
+                    .then(timezones => {
+                        const selectElement = document.getElementById('tz');
+                        timezones.forEach(tz => {
+                            const option = document.createElement('option');
+                            option.value = tz;
+                            option.textContent = tz;
+                            selectElement.appendChild(option);
+                        });
+                        // Set default value to America/New_York after populating the dropdown
+                        selectElement.value = "America/New_York";
+                    })
+                    .catch(error => console.error('Error loading timezones:', error));
+            </script>
         </div>
 
         <input type="submit" value="Generate Schedule">
