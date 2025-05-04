@@ -41,9 +41,6 @@ OUTPUT_FOLDER.mkdir(exist_ok=True)
 
 
 def oh_sched_wrapped(f_csv, config):
-    # config, output is always output_folder / 'office_hours.ics'
-    config.f_out = OUTPUT_FOLDER / 'office_hours.ics'
-
     oh_sched.main(f_csv, config)
 
     # print a copy of config used to outputs
@@ -70,33 +67,36 @@ def oh_sched_wrapped(f_csv, config):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        csv_file = request.files['csv_file']
-
-        # load config
-        config_params = ['oh_per_ta', 'max_ta_per_oh', 'date_start',
-                         'date_end', 'scale_dict', 'tz']
-        config = {s: request.form.get(s) for s in config_params}
-        config = {k: None if v == '' else v
-                  for k, v in config.items()}
-
-        if config['scale_dict'] is not None:
-            s_scale = config['scale_dict']
-            config['scale_dict'] = dict()
-            for line in s_scale.split(','):
-                s_regex, scale = line.split(':')
-                config['scale_dict'][s_regex] = float(scale)
-
-        config = oh_sched.Config(**config)
-
-        csv_path = UPLOAD_FOLDER / csv_file.filename
-        csv_file.save(csv_path)
-
         # capture stdout and print to output
         stdout_buffer = io.StringIO()
         stderr_buffer = io.StringIO()
 
         with (contextlib.redirect_stdout(stdout_buffer),
               contextlib.redirect_stderr(stderr_buffer)):
+
+            csv_file = request.files['csv_file']
+
+            # load config
+            config_params = ['oh_per_ta', 'max_ta_per_oh', 'date_start',
+                             'date_end', 'scale_dict', 'tz']
+            config = {s: request.form.get(s) for s in config_params}
+            config = {k: None if v == '' else v
+                      for k, v in config.items()}
+            # web users always want ics
+            config['f_out'] = OUTPUT_FOLDER / 'office_hours.ics'
+
+            if config['scale_dict'] is not None:
+                s_scale = config['scale_dict']
+                config['scale_dict'] = dict()
+                for line in s_scale.split(','):
+                    s_regex, scale = line.split(':')
+                    config['scale_dict'][s_regex] = float(scale)
+
+            config = oh_sched.Config(**config)
+
+            csv_path = UPLOAD_FOLDER / csv_file.filename
+            csv_file.save(csv_path)
+
             output_paths = oh_sched_wrapped(csv_path, config)
 
         section_dict = {'config.yaml': yaml.dump(config.to_dict())}
