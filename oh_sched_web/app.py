@@ -1,6 +1,4 @@
-import contextlib
 import hashlib
-import io
 import logging
 import os
 import pathlib
@@ -12,9 +10,13 @@ import boto3
 import oh_sched
 import yaml
 from dotenv import load_dotenv
-from flask import Flask, request, send_from_directory, render_template
+from flask import Flask, send_from_directory, render_template
+from flask import request
 
 import oh_sched_web
+from oh_sched_web.constants import OUTPUT_FOLDER, HASH_LEN, LOG_PREFIX, \
+    UPLOAD_FOLDER
+from oh_sched_web.std_tools import add_stdout_stderr, error_to_stdout
 
 app = Flask(__name__)
 
@@ -25,58 +27,39 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
-HASH_LEN = 8
 
-# setup paths
-FOLDER = pathlib.Path(oh_sched_web.__file__).parents[1]
-UPLOAD_FOLDER = FOLDER / pathlib.Path('uploads')
-OUTPUT_FOLDER = FOLDER / pathlib.Path('outputs')
-DOWNLOAD_FOLDER = FOLDER / pathlib.Path('downloads')
-STDOUT_FILE = 'output.txt'
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        with GetDeleteInputs() as (config, csv_path):
+            section_dict, download_links = oh_sched_main(config, csv_path)
 
-LOG_PREFIX = 'OH_SCHED RUNNING:'
+        # fix path for downloads
+        download_links = [f'/download/{p.name}' for p in download_links]
+        return render_template('results.html',
+                               download_links=download_links,
+                               section_dict=section_dict)
 
-UPLOAD_FOLDER.mkdir(exist_ok=True)
-OUTPUT_FOLDER.mkdir(exist_ok=True)
+    return render_template('index.html')
 
 
-def add_stdout_stderr(fnc):
-    """ adds stdout to section_dict & download_links """
+@app.route('/download/<filename>')
+def download_file(filename):
+    if filename == 'oh_prefs_toy.csv':
+        folder = pathlib.Path(oh_sched_web.__file__).parents[1]
+    else:
+        folder = OUTPUT_FOLDER
 
-    def wrapped(*args, **kwargs):
-        # capture stdout and print to output
-        stdout_buffer = io.StringIO()
-        stderr_buffer = io.StringIO()
+    if not (folder / filename).exists():
+        return f'File {folder / filename} not found', 404
 
-        with (contextlib.redirect_stdout(stdout_buffer),
-              contextlib.redirect_stderr(stderr_buffer)):
-            section_dict, download_links = fnc(*args, **kwargs)
-
-        # add stdout & stderr as needed
-        for buffer, file in [(stderr_buffer, 'error.txt'),
-                             (stdout_buffer, 'output.txt')]:
-            s = buffer.getvalue()
-            if not s:
-                # no output generated
-                continue
-
-            f_out = OUTPUT_FOLDER / file
-            with open(f_out, 'w') as f:
-                print(s, file=f)
-
-            download_links.append(f_out)
-            section_dict[file] = s
-
-        return section_dict, download_links
-
-    return wrapped
+    return send_from_directory(folder, filename, as_attachment=True)
 
 
 @add_stdout_stderr
+@error_to_stdout
 def oh_sched_main(config, csv_path):
     """ runs oh_sched.main & logs output"""
-    raise Exception('testing')
-
     oh_sched.main(csv_path, config)
 
     # print a copy of config used to outputs
@@ -139,34 +122,3 @@ class GetDeleteInputs:
             else:
                 item.unlink()
         return False
-
-
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    if request.method == 'POST':
-        with GetDeleteInputs() as (config, csv_path):
-            section_dict, download_links = oh_sched_main(config, csv_path)
-
-        # fix path for downloads
-        download_links = [str(DOWNLOAD_FOLDER / path)
-                          for path in download_links]
-        return render_template('results.html',
-                               download_links=download_links,
-                               section_dict=section_dict)
-
-    return render_template('index.html')
-
-
-@app.route('/download/<filename>')
-def download_file(filename):
-    if filename == 'oh_prefs_toy.csv':
-        folder = pathlib.Path(oh_sched_web.__file__).parents[1]
-    elif filename == 'usage.csv':
-        folder = FOLDER
-    else:
-        folder = OUTPUT_FOLDER
-
-    if not (folder / filename).exists():
-        return f'File {folder / filename} not found', 404
-
-    return send_from_directory(folder, filename, as_attachment=True)
