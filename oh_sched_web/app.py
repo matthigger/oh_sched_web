@@ -2,18 +2,17 @@ import contextlib
 import hashlib
 import io
 import logging
+import os
 import pathlib
 import shutil
-import os
 import uuid
 from datetime import datetime
 
 import boto3
 import oh_sched
 import yaml
-from flask import Flask, request, send_from_directory, render_template
 from dotenv import load_dotenv
-
+from flask import Flask, request, send_from_directory, render_template
 
 import oh_sched_web
 
@@ -32,7 +31,8 @@ HASH_LEN = 8
 FOLDER = pathlib.Path(oh_sched_web.__file__).parents[1]
 UPLOAD_FOLDER = FOLDER / pathlib.Path('uploads')
 OUTPUT_FOLDER = FOLDER / pathlib.Path('outputs')
-f_usage = FOLDER / 'usage.csv'
+DOWNLOAD_FOLDER = FOLDER / pathlib.Path('downloads')
+STDOUT_FILE = 'output.txt'
 
 LOG_PREFIX = 'OH_SCHED RUNNING:'
 
@@ -40,66 +40,19 @@ UPLOAD_FOLDER.mkdir(exist_ok=True)
 OUTPUT_FOLDER.mkdir(exist_ok=True)
 
 
-def oh_sched_wrapped(f_csv, config):
-    oh_sched.main(f_csv, config)
+def add_stdout_stderr(fnc):
+    """ adds stdout to section_dict & download_links """
 
-    # print a copy of config used to outputs
-    f_yaml = OUTPUT_FOLDER / 'config.yaml'
-    config.to_yaml(f_yaml)
-
-    # send usage line to aws
-    now = datetime.now()
-    s_now = now.strftime('%Y-%m-%d %H:%M:%S.%f')
-    email_list = [hashlib.sha256(s.encode()).hexdigest()[:HASH_LEN]
-                  for s in oh_sched.extract_csv(f_csv)[1]]
-    s = ','.join([s_now] + email_list)
-    app.logger.info(LOG_PREFIX + s)
-
-    # upload
-    s3 = boto3.client('s3')
-    s3.put_object(Bucket=os.environ.get('AWS_BUCKET'),
-                  Key=str(uuid.uuid4())[:5],
-                  Body=s)
-
-    return [config.f_out, f_yaml]
-
-
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    if request.method == 'POST':
+    def wrapped(*args, **kwargs):
         # capture stdout and print to output
         stdout_buffer = io.StringIO()
         stderr_buffer = io.StringIO()
 
         with (contextlib.redirect_stdout(stdout_buffer),
               contextlib.redirect_stderr(stderr_buffer)):
+            section_dict, download_links = fnc(*args, **kwargs)
 
-            csv_file = request.files['csv_file']
-
-            # load config
-            config_params = ['oh_per_ta', 'max_ta_per_oh', 'date_start',
-                             'date_end', 'scale_dict', 'tz']
-            config = {s: request.form.get(s) for s in config_params}
-            config = {k: None if v == '' else v
-                      for k, v in config.items()}
-            # web users always want ics
-            config['f_out'] = OUTPUT_FOLDER / 'office_hours.ics'
-
-            if config['scale_dict'] is not None:
-                s_scale = config['scale_dict']
-                config['scale_dict'] = dict()
-                for line in s_scale.split(','):
-                    s_regex, scale = line.split(':')
-                    config['scale_dict'][s_regex] = float(scale)
-
-            config = oh_sched.Config(**config)
-
-            csv_path = UPLOAD_FOLDER / csv_file.filename
-            csv_file.save(csv_path)
-
-            output_paths = oh_sched_wrapped(csv_path, config)
-
-        section_dict = {'config.yaml': yaml.dump(config.to_dict())}
+        # add stdout & stderr as needed
         for buffer, file in [(stderr_buffer, 'error.txt'),
                              (stdout_buffer, 'output.txt')]:
             s = buffer.getvalue()
@@ -111,18 +64,92 @@ def index():
             with open(f_out, 'w') as f:
                 print(s, file=f)
 
-            output_paths.append(f_out)
+            download_links.append(f_out)
             section_dict[file] = s
 
-        # delete all uploads
+        return section_dict, download_links
+
+    return wrapped
+
+
+@add_stdout_stderr
+def oh_sched_main(config, csv_path):
+    """ runs oh_sched.main & logs output"""
+    raise Exception('testing')
+
+    oh_sched.main(csv_path, config)
+
+    # print a copy of config used to outputs
+    f_yaml = OUTPUT_FOLDER / 'config.yaml'
+    config.to_yaml(f_yaml)
+
+    # send usage line to aws
+    now = datetime.now()
+    s_now = now.strftime('%Y-%m-%d %H:%M:%S.%f')
+    email_list = [hashlib.sha256(s.encode()).hexdigest()[:HASH_LEN]
+                  for s in oh_sched.extract_csv(csv_path)[1]]
+    s = ','.join([s_now] + email_list)
+    app.logger.info(LOG_PREFIX + s)
+
+    # upload
+    s3 = boto3.client('s3')
+    s3.put_object(Bucket=os.environ.get('AWS_BUCKET'),
+                  Key=str(uuid.uuid4())[:5],
+                  Body=s)
+
+    section_dict = {'config.yaml': yaml.dump(config.to_dict())}
+    download_links = [config.f_out, f_yaml]
+
+    return section_dict, download_links
+
+
+class GetDeleteInputs:
+    """ loads / uploads inputs from webform, deletes files after use"""
+
+    def __enter__(self):
+        f_csv = request.files['csv_file']
+
+        # load config
+        config_params = ['oh_per_ta', 'max_ta_per_oh', 'date_start',
+                         'date_end', 'scale_dict', 'tz']
+        config = {s: request.form.get(s) for s in config_params}
+        config = {k: None if v == '' else v
+                  for k, v in config.items()}
+        # web users always want ics
+        config['f_out'] = OUTPUT_FOLDER / 'office_hours.ics'
+
+        if config['scale_dict'] is not None:
+            s_scale = config['scale_dict']
+            config['scale_dict'] = dict()
+            for line in s_scale.split(','):
+                s_regex, scale = line.split(':')
+                config['scale_dict'][s_regex] = float(scale)
+
+        config = oh_sched.Config(**config)
+
+        csv_path = UPLOAD_FOLDER / f_csv.filename
+        f_csv.save(csv_path)
+
+        return config, csv_path
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
         for item in UPLOAD_FOLDER.iterdir():
             if item.is_dir():
                 shutil.rmtree(item)
             else:
                 item.unlink()
+        return False
 
-        # Show download links
-        download_links = [f'/download/{p.name}' for p in output_paths]
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        with GetDeleteInputs() as (config, csv_path):
+            section_dict, download_links = oh_sched_main(config, csv_path)
+
+        # fix path for downloads
+        download_links = [str(DOWNLOAD_FOLDER / path)
+                          for path in download_links]
         return render_template('results.html',
                                download_links=download_links,
                                section_dict=section_dict)
