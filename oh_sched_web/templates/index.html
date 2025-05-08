@@ -118,31 +118,52 @@
 <div class="container">
     <h1>TA Office Hours Scheduler</h1>
     <p>
-        Builds a TA Office Hours schedule which synthesizes TA and instructor preferences.
+        Builds a TA Office Hours schedule which synthesizes TA and instructor
+        preferences:
     </p>
 
     <ul>
         <li>TAs share their preferred office hours by filling out an <a
                 href="https://docs.google.com/forms/d/1Wm82XnLux83t3pZvLMcAhuiJZKEEsbs4kcqXnotI5bs/template/preview"
-                target="_blank">online survey </a> (you'll need to sign in).  Please edit this template to your own needs (e.g., swap "8AM-9AM" to
-            "In Person: 10:30AM-10:45AM" or "Virtual 5PM-7PM").
+                target="_blank">online survey </a> (you'll need to sign in).
+            Please edit this template to your own needs (e.g., swap "8AM-9AM"
+            to
+            "In Person 10:30AM-10:45AM" or "Virtual 5PM-7PM").
         </li>
-        <li>The instructor provides their own scheduling preferences (see below).</li>
-        <li>A final schedule is exported to an <code>.ics</code> file, ready to upload into most calendar apps (e.g.
-            Google Calendar)
+        <li>The instructor provides their own scheduling preferences (see
+            below).
+        </li>
+        <li>A final schedule is exported to an <code>.ics</code> file, ready to
+            upload into most calendar apps (e.g.
+            Google Calendar).
+        </li>
+    </ul>
+
+    <h3>Helpful to know</h3>
+    <ul>
+        <li>
+            The output ICS calendar events are generated from the first row of the input CSV and the TAs assigned. For example, "Virtual 10:30AM-10:45AM" might create an ICS calendar event "Virtual: Matt, Zeke". You may find it convenient to use the campus room names or            "Virtual" so the ICS file can inform students where to go.
+        </li>
+        <li>
+            The software avoids assigning the same TA to two concurrent Office Hours slots.  Office hours may be concurrent when some are virtual
+            and others are in-person.
+        </li>
+        <li>
+            To track how many people use this tool, each run generates a
+            timestamp and a list of TA email hashes (they can't be used to
+            identify the original email addresses).
         </li>
     </ul>
 
     <p>
-        Watch our <a href="https://youtu.be/a--ICU6LpnM" target="_blank"> tutorial video</a> to see how it works or try it yourself with the <a href="{{ url_for('download_file', filename='oh_prefs_toy.csv') }}" download> example preference CSV</a>.
+        Watch our <a href="https://youtu.be/a--ICU6LpnM" target="_blank">
+        tutorial video</a> to see how it works or try it yourself with the <a
+            href="{{ url_for('download_file', filename='oh_prefs_toy.csv') }}"
+            download> example preference CSV</a>.
     </p>
 
-    <p>
-        To track how many people use this tool, each run generates a timestamp and a list of TA email hashes (they can't be used to
-        identify the original email addresses).
-    </p>
-
-    <p>If something is broken or you need help getting started, please don't hesitate to reach out :)
+    <p>If something is broken, or you need help getting started, please don't
+        hesitate to reach out :)
         mhigger@ccs.neu.edu</p>
 
 
@@ -153,22 +174,34 @@
         <input type="file" name="csv_file" required><br>
 
         <!-- Parameter for office hours assigned per TA -->
-        <label for="oh_per_ta">How many Office Hour slots should each TA be assigned?</label>
+        <label for="oh_per_ta">How many Office Hour slots should each TA be
+            assigned?</label>
         <input type="number" name="oh_per_ta" value="1" min="1" step="1"><br>
 
         <!-- Parameter for maximum number of TAs per office hours slot -->
-        <label for="max_ta_per_oh">At most, how many TAs are assigned the same Office Hour slot? (empty = no
+        <label for="max_ta_per_oh">At most, how many TAs are assigned the same
+            Office Hour slot? (empty = no
             maximum):</label>
-        <input type="number" name="max_ta_per_oh" value="" min="0" step="1"><br>
+        <input type="number" name="max_ta_per_oh" value="" min="0"
+               step="1"><br>
 
         <!-- Parameter for scale_dict -->
         <label for="scale_dict">Scaling Preferences (optional):</label><br>
 
         <p class="help-text" style="margin-top: 0; padding-top: 0;">
-            This parameter allows you to adjust TA preferences to suit course needs.  For example, "Fri:1.1"
-            scales preferences on Fridays by a factor of 1.1, encouraging their selection (maybe you want to ensure enough TA support for time slots which you expect to be busy).
-            Multiple scaling factors can be added, just seperate by a comma (e.g. "Fri:1.2,3PM:.9" would also discourage OH which include "3PM").
-            By keeping your scaling factors close to 1 your adjustment will, in effect, only breaks ties such that you can respect the TA preferences as originally given.  Be sure to check that your scale applies as intended by checking the "Scaling office hours preferences:" section of the output.
+            This parameter allows you to adjust TA preferences to suit course
+            needs. For example, "Fri:1.1"
+            scales preferences on Fridays by a factor of 1.1, encouraging their
+            selection (maybe you want to ensure enough TA support for time
+            slots which you expect to be busy).
+            Multiple scaling factors can be added, just seperate by a comma
+            (e.g. "Fri:1.2,3PM:.9" would also discourage OH which include
+            "3PM").
+            By keeping your scaling factors close to 1 your adjustment will, in
+            effect, only breaks ties such that you can respect the TA
+            preferences as originally given. Be sure to check that your scale
+            applies as intended by checking the "Scaling office hours
+            preferences:" section of the output.
         </p>
         <textarea name="scale_dict" rows="1" cols="50"></textarea><br>
 
@@ -186,7 +219,8 @@
             <!-- Parameter for timezone -->
             <label for="tz">Timezone:</label>
             <select name="tz" id="tz">
-                <option value="">Select Timezone</option> <!-- Placeholder Option -->
+                <option value="">Select Timezone</option>
+                <!-- Placeholder Option -->
             </select>
 
             <script>
