@@ -1,251 +1,168 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>TA Office Hours Scheduler</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            width: 80%;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-
-        h1, h2, h3 {
-            text-align: center;
-        }
-
-        p, ul {
-            line-height: 1.6;
-            font-size: 16px;
-        }
-
-        a {
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        ul {
-            margin-top: 10px;
-            padding-left: 20px;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            margin-top: 20px;
-        }
-
-        label {
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        input[type="file"],
-        input[type="number"],
-        input[type="date"],
-        textarea {
-            padding: 8px;
-            font-size: 16px;
-            margin-bottom: 15px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
-
-        input[type="submit"] {
-            background-color: #007bff;
-            color: #fff;
-            padding: 10px;
-            border: none;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #0056b3;
-        }
-
-        .log-entry {
-            font-family: monospace;
-            background-color: #f1f1f1;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            word-wrap: break-word;
-        }
-
-        .help-text {
-            font-size: 14px;
-            color: #555;
-        }
-
-        .footer {
-            text-align: center;
-            font-size: 14px;
-            color: #888;
-            margin-top: 40px;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .form-row label {
-            margin-right: 0.25rem;
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TA Office Hours Scheduler — Instructions</title>
+  <style>
+    :root {
+      --bg: #f4f4f9;
+      --fg: #333;
+      --brand: #007bff;
+      --brand-dark: #0056b3;
+      --muted: #555;
+      --border: #ccc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--fg);
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      width: 82%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,.1);
+      border-radius: 8px;
+    }
+    h1, h2, h3 { text-align: center; }
+    p, ul { line-height: 1.6; font-size: 16px; }
+    a { color: var(--brand); text-decoration: none; }
+    a:hover, a:focus { text-decoration: underline; }
+    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 3px solid var(--brand);
+      outline-offset: 2px;
+    }
+    ul { margin-top: 10px; padding-left: 20px; }
+    form { display: flex; flex-direction: column; margin-top: 20px; gap: 0.5rem; }
+    label { margin-bottom: 5px; font-weight: bold; }
+    input[type="file"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+      padding: 8px;
+      font-size: 16px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+    input[type="submit"] {
+      background-color: var(--brand);
+      color: #fff;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    input[type="submit"]:hover { background-color: var(--brand-dark); }
+    .log-entry {
+      font-family: monospace;
+      background-color: #f1f1f1;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      word-wrap: break-word;
+    }
+    .help-text { font-size: 14px; color: var(--muted); }
+    .footer { text-align: center; font-size: 14px; color: #888; margin-top: 40px; }
+    .form-row { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+    .form-row label { margin-right: 0.25rem; }
+    fieldset { border: 1px solid var(--border); border-radius: 6px; padding: 12px; }
+    legend { font-weight: bold; padding: 0 6px; }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <header>
+      <h1>TA Office Hours Scheduler</h1>
+      <p role="doc-subtitle">Create a TA office-hours schedule that balances TA and instructor preferences.</p>
+    </header>
 
-<div class="container">
-    <h1>TA Office Hours Scheduler</h1>
-    <p>
-        Builds a TA Office Hours schedule which synthesizes TA and instructor
-        preferences:
-    </p>
+    <main id="main">
+      <section aria-labelledby="overview">
+        <h2 id="overview">Overview</h2>
+        <p>TAs enter their preferred office-hours using a short
+          <a href="https://docs.google.com/forms/d/1Wm82XnLux83t3pZvLMcAhuiJZKEEsbs4kcqXnotI5bs/template/preview" target="_blank" rel="noopener noreferrer">online survey</a> (sign-in required). Users may duplicate this template and edit labels to match your course (for example, change “8:00–9:00 AM” to “In‑Person 10:30–10:45 AM” or “Virtual 5–7 PM”).</p>
+        <p>From the survey’s CSV export and the instructor parameters below, the tool generates a final schedule and an <code>.ics</code> calendar you can import into Google Calendar and most other apps.</p>
+        <p>Watch the <a href="https://youtu.be/a--ICU6LpnM" target="_blank" rel="noopener noreferrer">tutorial video</a> or try the <a href="{{ url_for('download_file', filename='oh_prefs_toy.csv') }}" download>example preference CSV</a>.</p>
+      </section>
 
-    <ul>
-        <li>TAs share their preferred office hours by filling out an <a
-                href="https://docs.google.com/forms/d/1Wm82XnLux83t3pZvLMcAhuiJZKEEsbs4kcqXnotI5bs/template/preview"
-                target="_blank">online survey </a> (you'll need to sign in).
-            Please edit this template to your own needs (e.g., swap "8AM-9AM"
-            to
-            "In Person 10:30AM-10:45AM" or "Virtual 5PM-7PM").
-        </li>
-        <li>The instructor provides their own scheduling preferences (see
-            below).
-        </li>
-        <li>A final schedule is exported to an <code>.ics</code> file, ready to
-            upload into most calendar apps (e.g.
-            Google Calendar).
-        </li>
-    </ul>
+      <section aria-labelledby="good-to-know">
+        <h2 id="good-to-know">Good to know</h2>
+        <ul>
+          <li>Events in the ICS file are named from the first row of the CSV and the assigned TAs. For example, a slot labeled “Virtual 10:30–10:45 AM” becomes an event like “Virtual: Matt, Zeke”. Using campus room names or “Virtual” helps students know where to go.</li>
+          <li>The scheduler will not assign the same TA to overlapping slots. Overlaps can happen when in‑person and virtual hours occur at the same time.</li>
+          <li>To measure usage, each run logs a timestamp and salted hashes of TA emails. These hashes cannot be reversed to recover the original addresses.</li>
+        </ul>
+      </section>
 
-    <h3>Helpful to know</h3>
-    <ul>
-        <li>
-            The output ICS calendar events are generated from the first row of the input CSV and the TAs assigned. For example, "Virtual 10:30AM-10:45AM" might create an ICS calendar event "Virtual: Matt, Zeke". You may find it convenient to use the campus room names or            "Virtual" so the ICS file can inform students where to go.
-        </li>
-        <li>
-            The software avoids assigning the same TA to two concurrent Office Hours slots.  Office hours may be concurrent when some are virtual
-            and others are in-person.
-        </li>
-        <li>
-            To track how many people use this tool, each run generates a
-            timestamp and a list of TA email hashes (they can't be used to
-            identify the original email addresses).
-        </li>
-    </ul>
+      <section aria-labelledby="build">
+        <h2 id="build">Build schedule</h2>
+        <form method="post" enctype="multipart/form-data" novalidate>
+          <label for="csv_file">Preference CSV (exported from the survey)</label>
+          <input id="csv_file" name="csv_file" type="file" accept=".csv" required>
 
-    <p>
-        Watch our <a href="https://youtu.be/a--ICU6LpnM" target="_blank">
-        tutorial video</a> to see how it works or try it yourself with the <a
-            href="{{ url_for('download_file', filename='oh_prefs_toy.csv') }}"
-            download> example preference CSV</a>.
-    </p>
+          <label for="oh_per_ta">How many office‑hour slots should each TA be assigned?</label>
+          <input id="oh_per_ta" name="oh_per_ta" type="number" value="1" min="1" step="1" inputmode="numeric">
 
-    <p>If something is broken, or you need help getting started, please don't
-        hesitate to reach out :)
-        mhigger@ccs.neu.edu</p>
+          <label for="max_ta_per_oh">Maximum number of TAs per slot (leave blank for no cap)</label>
+          <input id="max_ta_per_oh" name="max_ta_per_oh" type="number" min="0" step="1" inputmode="numeric" placeholder="e.g., 2">
 
+          <label for="scale_dict">Scaling preferences (optional)</label>
+          <p id="scale_help" class="help-text" style="margin-top:0; padding-top:0;">
+            Adjust TA preferences to suit course needs. Example: <code>Fri:1.1</code> boosts Friday slots by 10% to encourage selection. Provide multiple rules separated by commas, e.g., <code>Fri:1.2,3PM:0.9</code> (this slightly discourages slots that include “3 PM”). Keep factors near 1.0 to mainly break ties so TA preferences are still respected. After running, review “Scaling office-hours preferences” in the output to verify your rules applied as intended.
+          </p>
+          <textarea id="scale_dict" name="scale_dict" rows="1" cols="50" aria-describedby="scale_help" placeholder="Examples: Fri:1.1 or Fri:1.2,3PM:0.9"></textarea>
 
-    <h2>Build Schedule</h2>
-    <form method="post" enctype="multipart/form-data">
+          <fieldset class="form-row" aria-labelledby="ics-legend">
+            <legend id="ics-legend">Output ICS calendar</legend>
 
-        <label for="csv_file">Preference CSV (from survey):</label>
-        <input type="file" name="csv_file" required><br>
+            <label for="date_start">Start date</label>
+            <input id="date_start" name="date_start" type="date">
 
-        <!-- Parameter for office hours assigned per TA -->
-        <label for="oh_per_ta">How many Office Hour slots should each TA be
-            assigned?</label>
-        <input type="number" name="oh_per_ta" value="1" min="1" step="1"><br>
+            <label for="date_end">End date</label>
+            <input id="date_end" name="date_end" type="date">
 
-        <!-- Parameter for maximum number of TAs per office hours slot -->
-        <label for="max_ta_per_oh">At most, how many TAs are assigned the same
-            Office Hour slot? (empty = no
-            maximum):</label>
-        <input type="number" name="max_ta_per_oh" value="" min="0"
-               step="1"><br>
-
-        <!-- Parameter for scale_dict -->
-        <label for="scale_dict">Scaling Preferences (optional):</label><br>
-
-        <p class="help-text" style="margin-top: 0; padding-top: 0;">
-            This parameter allows you to adjust TA preferences to suit course
-            needs. For example, "Fri:1.1"
-            scales preferences on Fridays by a factor of 1.1, encouraging their
-            selection (maybe you want to ensure enough TA support for time
-            slots which you expect to be busy).
-            Multiple scaling factors can be added, just seperate by a comma
-            (e.g. "Fri:1.2,3PM:.9" would also discourage OH which include
-            "3PM").
-            By keeping your scaling factors close to 1 your adjustment will, in
-            effect, only breaks ties such that you can respect the TA
-            preferences as originally given. Be sure to check that your scale
-            applies as intended by checking the "Scaling office hours
-            preferences:" section of the output.
-        </p>
-        <textarea name="scale_dict" rows="1" cols="50"></textarea><br>
-
-
-        <label>Output ICS Calendar:</label>
-        <div class="form-row">
-            <!-- Parameter for the starting date -->
-            <label for="date_start">Start:</label>
-            <input type="date" name="date_start" value="">
-
-            <!-- Parameter for the ending date -->
-            <label for="date_end">End:</label>
-            <input type="date" name="date_end" value="">
-
-            <!-- Parameter for timezone -->
-            <label for="tz">Timezone:</label>
-            <select name="tz" id="tz">
-                <option value="">Select Timezone</option>
-                <!-- Placeholder Option -->
+            <label for="tz">Timezone</label>
+            <select id="tz" name="tz">
+              <option value="">Select a timezone</option>
+              <!-- Populated below -->
             </select>
+          </fieldset>
 
-            <script>
-                // Fetch the timezones data from the JSON file and populate the select dropdown
-                fetch('/static/timezones.json')
-                    .then(response => response.json())
-                    .then(timezones => {
-                        const selectElement = document.getElementById('tz');
-                        timezones.forEach(tz => {
-                            const option = document.createElement('option');
-                            option.value = tz;
-                            option.textContent = tz;
-                            selectElement.appendChild(option);
-                        });
-                        // Set default value to America/New_York after populating the dropdown
-                        selectElement.value = "America/New_York";
-                    })
-                    .catch(error => console.error('Error loading timezones:', error));
-            </script>
-        </div>
+          <input type="submit" value="Generate schedule">
+        </form>
+      </section>
 
-        <input type="submit" value="Generate Schedule">
-    </form>
+      <footer class="footer">
+        <p>Questions or issues? Email <a href="mailto:mhigger@ccs.neu.edu">mhigger@ccs.neu.edu</a>.</p>
+      </footer>
+    </main>
+  </div>
 
-</div>
-
+  <script>
+    // Populate timezone dropdown
+    fetch('/static/timezones.json')
+      .then(r => r.json())
+      .then(timezones => {
+        const select = document.getElementById('tz');
+        timezones.forEach(tz => {
+          const opt = document.createElement('option');
+          opt.value = tz;
+          opt.textContent = tz;
+          select.appendChild(opt);
+        });
+        // Default to America/New_York
+        select.value = "America/New_York";
+      })
+      .catch(err => console.error('Error loading timezones:', err));
+  </script>
 </body>
 </html>
